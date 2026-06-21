@@ -195,3 +195,95 @@ export async function createUserAction(formData: {
     return { success: false, error: error.message || "Terjadi kesalahan sistem." };
   }
 }
+
+export async function updateUserAction(
+  userId: string,
+  formData: {
+    nik: string;
+    nama_lengkap: string;
+    no_hp?: string;
+    password?: string;
+  }
+) {
+  try {
+    const supabase = await createClient();
+    const { data: { user: currentUser } } = await supabase.auth.getUser();
+    if (!currentUser) {
+      return { success: false, error: "Sesi Anda telah kedaluwarsa. Silakan login kembali." };
+    }
+
+    const { data: currentProfile, error: profileErr } = await supabase
+      .from("user_profiles")
+      .select("role")
+      .eq("id", currentUser.id)
+      .single();
+
+    if (profileErr || !currentProfile) {
+      return { success: false, error: "Gagal memuat profil admin pengubah." };
+    }
+
+    const allowedRoles = ["super_admin", "admin_kabupaten", "admin_kecamatan", "admin_desa"];
+    if (!allowedRoles.includes(currentProfile.role)) {
+      return { success: false, error: "Anda tidak memiliki hak untuk mengubah data pengguna." };
+    }
+
+    const adminClient = createAdminClient();
+    const finalNik = formData.nik.trim().toLowerCase();
+
+    // Pastikan username baru tidak duplikat
+    const { data: existingUser } = await adminClient
+      .from("user_profiles")
+      .select("id")
+      .eq("nik", finalNik)
+      .neq("id", userId)
+      .maybeSingle();
+
+    if (existingUser) {
+      return { success: false, error: "Username/NIK sudah terdaftar oleh pengguna lain." };
+    }
+
+    // Bangun payload update auth
+    const updateAuthPayload: any = {
+      email: `${finalNik}@sim-pkk.local`,
+      user_metadata: {
+        nik: finalNik,
+        nama_lengkap: formData.nama_lengkap,
+      }
+    };
+
+    if (formData.password && formData.password.trim()) {
+      if (formData.password.length < 6) {
+        return { success: false, error: "Password baru minimal 6 karakter." };
+      }
+      updateAuthPayload.password = formData.password;
+    }
+
+    // Update Auth User via admin Client
+    const { error: authUpdateError } = await adminClient.auth.admin.updateUserById(userId, updateAuthPayload);
+    if (authUpdateError) {
+      console.error("Auth update failed:", authUpdateError.message);
+      return { success: false, error: "Gagal memperbarui autentikasi: " + authUpdateError.message };
+    }
+
+    // Update user_profiles table
+    const { error: profileUpdateError } = await adminClient
+      .from("user_profiles")
+      .update({
+        nik: finalNik,
+        nama_lengkap: formData.nama_lengkap,
+        no_hp: formData.no_hp || null,
+      })
+      .eq("id", userId);
+
+    if (profileUpdateError) {
+      console.error("Profile table update failed:", profileUpdateError.message);
+      return { success: false, error: "Gagal melengkapi profil terupdate: " + profileUpdateError.message };
+    }
+
+    revalidatePath("/dashboard/users");
+    return { success: true };
+  } catch (error: any) {
+    console.error("Error in updateUserAction:", error);
+    return { success: false, error: error.message || "Terjadi kesalahan sistem." };
+  }
+}
