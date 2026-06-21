@@ -122,7 +122,7 @@ export default function DashboardSidebar({ profile }: DashboardSidebarProps) {
     {
       title: "Manajemen User",
       href: "/dashboard/users",
-      roles: ["super_admin", "admin_kabupaten", "admin_desa"],
+      roles: ["super_admin", "admin_kabupaten", "admin_kecamatan", "admin_desa"],
       icon: (
         <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 00-2 2v1c0 .552.448 1 1 1h6c.552 0 1-.448 1-1v-1a2 2 0 00-2-2m6 0a2 2 0 00-2 2v1c0 .552.448 1 1 1h6c.552 0 1-.448 1-1v-1a2 2 0 00-2-2" />

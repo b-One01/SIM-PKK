@@ -103,12 +103,15 @@ export async function createUserAction(formData: {
         return { success: false, error: "Desa wajib dipilih." };
       }
       targetDesaId = formData.desa_id;
+      targetKecamatanId = currentProfile.kecamatan_id;
     } else if (callerRole === "admin_desa") {
       // Admin Desa membuat Dusun, RW, RT, Dasawisma
       const allowedRoles = ["verifikator_dusun", "verifikator_rw", "verifikator_rt", "kader_dasawisma"];
       if (!allowedRoles.includes(role)) {
         return { success: false, error: "Admin Desa hanya dapat membuat Verifikator Dusun, RW, RT, atau Kader Dasawisma." };
       }
+      targetKecamatanId = currentProfile.kecamatan_id;
+      targetDesaId = currentProfile.desa_id;
 
       if (role === "verifikator_dusun") {
         if (!formData.dusun_id) {
