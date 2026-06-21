@@ -15,7 +15,7 @@
 -- ============================================
 -- HELPER FUNCTION: Cek akses user ke desa tertentu
 -- ============================================
-CREATE OR REPLACE FUNCTION auth.user_has_access_to_desa(target_desa_id UUID)
+CREATE OR REPLACE FUNCTION public.user_has_access_to_desa(target_desa_id UUID)
 RETURNS BOOLEAN AS $$
 DECLARE
     v_role TEXT;
@@ -65,7 +65,7 @@ $$ LANGUAGE plpgsql SECURITY DEFINER STABLE;
 -- ============================================
 -- HELPER FUNCTION: Ambil role user saat ini
 -- ============================================
-CREATE OR REPLACE FUNCTION auth.user_role()
+CREATE OR REPLACE FUNCTION public.user_role()
 RETURNS TEXT AS $$
     SELECT role FROM user_profiles WHERE id = auth.uid();
 $$ LANGUAGE sql SECURITY DEFINER STABLE;
@@ -114,9 +114,9 @@ BEGIN
         EXECUTE format(
             'CREATE POLICY "manage_%1$s" ON %1$I FOR ALL
              TO authenticated USING (
-                auth.user_role() IN (''super_admin'', ''admin_kabupaten'')
+                public.user_role() IN (''super_admin'', ''admin_kabupaten'')
              ) WITH CHECK (
-                auth.user_role() IN (''super_admin'', ''admin_kabupaten'')
+                public.user_role() IN (''super_admin'', ''admin_kabupaten'')
              )',
             tbl
         );
@@ -130,24 +130,24 @@ $$;
 -- SELECT: User hanya bisa lihat data di wilayah aksesnya
 CREATE POLICY "keluarga_select" ON keluarga
     FOR SELECT TO authenticated
-    USING (auth.user_has_access_to_desa(desa_id));
+    USING (public.user_has_access_to_desa(desa_id));
 
 -- INSERT: Hanya Kader Dasawisma dan Admin Desa yang bisa input
 CREATE POLICY "keluarga_insert" ON keluarga
     FOR INSERT TO authenticated
     WITH CHECK (
-        auth.user_role() IN ('kader_dasawisma', 'admin_desa', 'super_admin')
-        AND auth.user_has_access_to_desa(desa_id)
+        public.user_role() IN ('kader_dasawisma', 'admin_desa', 'super_admin')
+        AND public.user_has_access_to_desa(desa_id)
     );
 
 -- UPDATE: Kader bisa edit data miliknya, Admin Desa bisa edit semua di desanya
 CREATE POLICY "keluarga_update" ON keluarga
     FOR UPDATE TO authenticated
     USING (
-        auth.user_has_access_to_desa(desa_id)
+        public.user_has_access_to_desa(desa_id)
         AND (
-            auth.user_role() IN ('admin_desa', 'super_admin')
-            OR (auth.user_role() = 'kader_dasawisma' AND input_by = auth.uid())
+            public.user_role() IN ('admin_desa', 'super_admin')
+            OR (public.user_role() = 'kader_dasawisma' AND input_by = auth.uid())
         )
     );
 
@@ -155,8 +155,8 @@ CREATE POLICY "keluarga_update" ON keluarga
 CREATE POLICY "keluarga_delete" ON keluarga
     FOR DELETE TO authenticated
     USING (
-        auth.user_role() IN ('admin_desa', 'super_admin')
-        AND auth.user_has_access_to_desa(desa_id)
+        public.user_role() IN ('admin_desa', 'super_admin')
+        AND public.user_has_access_to_desa(desa_id)
     );
 
 -- ============================================
@@ -164,27 +164,27 @@ CREATE POLICY "keluarga_delete" ON keluarga
 -- ============================================
 CREATE POLICY "anggota_select" ON anggota_keluarga
     FOR SELECT TO authenticated
-    USING (auth.user_has_access_to_desa(desa_id));
+    USING (public.user_has_access_to_desa(desa_id));
 
 CREATE POLICY "anggota_insert" ON anggota_keluarga
     FOR INSERT TO authenticated
     WITH CHECK (
-        auth.user_role() IN ('kader_dasawisma', 'admin_desa', 'super_admin')
-        AND auth.user_has_access_to_desa(desa_id)
+        public.user_role() IN ('kader_dasawisma', 'admin_desa', 'super_admin')
+        AND public.user_has_access_to_desa(desa_id)
     );
 
 CREATE POLICY "anggota_update" ON anggota_keluarga
     FOR UPDATE TO authenticated
     USING (
-        auth.user_has_access_to_desa(desa_id)
-        AND auth.user_role() IN ('kader_dasawisma', 'admin_desa', 'super_admin')
+        public.user_has_access_to_desa(desa_id)
+        AND public.user_role() IN ('kader_dasawisma', 'admin_desa', 'super_admin')
     );
 
 CREATE POLICY "anggota_delete" ON anggota_keluarga
     FOR DELETE TO authenticated
     USING (
-        auth.user_role() IN ('admin_desa', 'super_admin')
-        AND auth.user_has_access_to_desa(desa_id)
+        public.user_role() IN ('admin_desa', 'super_admin')
+        AND public.user_has_access_to_desa(desa_id)
     );
 
 -- ============================================
@@ -201,7 +201,7 @@ BEGIN
         -- SELECT
         EXECUTE format(
             'CREATE POLICY "select_%1$s" ON %1$I FOR SELECT TO authenticated
-             USING (auth.user_has_access_to_desa(desa_id))',
+             USING (public.user_has_access_to_desa(desa_id))',
             tbl
         );
         
@@ -209,8 +209,8 @@ BEGIN
         EXECUTE format(
             'CREATE POLICY "insert_%1$s" ON %1$I FOR INSERT TO authenticated
              WITH CHECK (
-                auth.user_role() IN (''kader_dasawisma'', ''admin_desa'', ''super_admin'')
-                AND auth.user_has_access_to_desa(desa_id)
+                public.user_role() IN (''kader_dasawisma'', ''admin_desa'', ''super_admin'')
+                AND public.user_has_access_to_desa(desa_id)
              )',
             tbl
         );
@@ -219,8 +219,8 @@ BEGIN
         EXECUTE format(
             'CREATE POLICY "update_%1$s" ON %1$I FOR UPDATE TO authenticated
              USING (
-                auth.user_role() IN (''kader_dasawisma'', ''admin_desa'', ''super_admin'')
-                AND auth.user_has_access_to_desa(desa_id)
+                public.user_role() IN (''kader_dasawisma'', ''admin_desa'', ''super_admin'')
+                AND public.user_has_access_to_desa(desa_id)
              )',
             tbl
         );
@@ -229,8 +229,8 @@ BEGIN
         EXECUTE format(
             'CREATE POLICY "delete_%1$s" ON %1$I FOR DELETE TO authenticated
              USING (
-                auth.user_role() IN (''admin_desa'', ''super_admin'')
-                AND auth.user_has_access_to_desa(desa_id)
+                public.user_role() IN (''admin_desa'', ''super_admin'')
+                AND public.user_has_access_to_desa(desa_id)
              )',
             tbl
         );
@@ -244,22 +244,22 @@ $$;
 -- SELECT: RT/RW bisa lihat verifikasi di desanya
 CREATE POLICY "verifikasi_select" ON verifikasi_data
     FOR SELECT TO authenticated
-    USING (auth.user_has_access_to_desa(desa_id));
+    USING (public.user_has_access_to_desa(desa_id));
 
 -- UPDATE: Verifikator hanya bisa approve/return
 CREATE POLICY "verifikasi_update" ON verifikasi_data
     FOR UPDATE TO authenticated
     USING (
-        auth.user_has_access_to_desa(desa_id)
-        AND auth.user_role() IN ('verifikator_rt', 'verifikator_rw', 'admin_desa', 'super_admin')
+        public.user_has_access_to_desa(desa_id)
+        AND public.user_role() IN ('verifikator_rt', 'verifikator_rw', 'admin_desa', 'super_admin')
     );
 
 -- INSERT: Sistem (admin_desa atau trigger) yang membuat record verifikasi
 CREATE POLICY "verifikasi_insert" ON verifikasi_data
     FOR INSERT TO authenticated
     WITH CHECK (
-        auth.user_role() IN ('admin_desa', 'super_admin')
-        AND auth.user_has_access_to_desa(desa_id)
+        public.user_role() IN ('admin_desa', 'super_admin')
+        AND public.user_has_access_to_desa(desa_id)
     );
 
 -- ============================================
@@ -274,10 +274,10 @@ CREATE POLICY "profile_select_own" ON user_profiles
 CREATE POLICY "profile_select_admin" ON user_profiles
     FOR SELECT TO authenticated
     USING (
-        auth.user_role() IN ('super_admin', 'admin_kabupaten', 'admin_desa')
+        public.user_role() IN ('super_admin', 'admin_kabupaten', 'admin_desa')
         AND (
-            auth.user_role() = 'super_admin'
-            OR auth.user_has_access_to_desa(desa_id)
+            public.user_role() = 'super_admin'
+            OR public.user_has_access_to_desa(desa_id)
         )
     );
 
@@ -291,10 +291,10 @@ CREATE POLICY "profile_update_own" ON user_profiles
 CREATE POLICY "profile_manage_admin" ON user_profiles
     FOR ALL TO authenticated
     USING (
-        auth.user_role() IN ('super_admin', 'admin_kabupaten', 'admin_desa')
+        public.user_role() IN ('super_admin', 'admin_kabupaten', 'admin_desa')
     )
     WITH CHECK (
-        auth.user_role() IN ('super_admin', 'admin_kabupaten', 'admin_desa')
+        public.user_role() IN ('super_admin', 'admin_kabupaten', 'admin_desa')
     );
 
 -- ============================================
@@ -303,7 +303,7 @@ CREATE POLICY "profile_manage_admin" ON user_profiles
 -- User hanya bisa lihat log sync miliknya
 CREATE POLICY "sync_select_own" ON sync_log
     FOR SELECT TO authenticated
-    USING (user_id = auth.uid() OR auth.user_role() IN ('super_admin', 'admin_desa'));
+    USING (user_id = auth.uid() OR public.user_role() IN ('super_admin', 'admin_desa'));
 
 -- User bisa insert log sync sendiri
 CREATE POLICY "sync_insert" ON sync_log

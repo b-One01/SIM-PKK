@@ -163,7 +163,7 @@ CREATE TRIGGER trg_set_sla
 CREATE OR REPLACE FUNCTION handle_new_user()
 RETURNS TRIGGER AS $$
 BEGIN
-    INSERT INTO user_profiles (
+    INSERT INTO public.user_profiles (
         id, 
         nama_lengkap, 
         role, 
