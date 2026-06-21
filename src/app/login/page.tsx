@@ -25,9 +25,9 @@ export default function LoginPage() {
     e.preventDefault();
     setError("");
 
-    // Validasi NIK
-    if (nik.length !== 16 || !/^\d+$/.test(nik)) {
-      setError("NIK harus 16 digit angka");
+    // Validasi NIK atau Username
+    if (nik.trim().length < 3) {
+      setError("NIK atau Username minimal 3 karakter");
       return;
     }
 
@@ -43,14 +43,14 @@ export default function LoginPage() {
       const { createClient } = await import("@/lib/supabase/client");
       const supabase = createClient();
 
-      // Login menggunakan NIK sebagai email (format: NIK@sim-pkk.local)
+      // Login menggunakan NIK/Username sebagai email (format: username@sim-pkk.local)
       const { error: authError } = await supabase.auth.signInWithPassword({
-        email: `${nik}@sim-pkk.local`,
+        email: `${nik.trim().toLowerCase()}@sim-pkk.local`,
         password: password,
       });
 
       if (authError) {
-        setError("NIK atau password salah. Silakan coba lagi.");
+        setError("NIK/Username atau password salah. Silakan coba lagi.");
         return;
       }
 
@@ -110,30 +110,23 @@ export default function LoginPage() {
         <Card variant="glass" padding="lg" className="shadow-modal backdrop-blur-2xl border-white/40">
           <CardTitle>Masuk ke Akun Anda</CardTitle>
           <CardDescription>
-            Gunakan NIK dan password yang diberikan oleh admin.
+            Gunakan NIK atau Username Kecamatan untuk masuk.
           </CardDescription>
 
           <form onSubmit={handleLogin} className="mt-6 space-y-5">
-            {/* NIK Input */}
+            {/* NIK/Username Input */}
             <Input
-              label="NIK (Nomor Induk Kependudukan)"
-              placeholder="Masukkan 16 digit NIK"
+              label="NIK atau Username"
+              placeholder="Masukkan NIK atau nama kecamatan"
               value={nik}
-              onChange={(e) => {
-                // Hanya izinkan angka, maksimal 16 digit
-                const val = e.target.value.replace(/\D/g, "").slice(0, 16);
-                setNik(val);
-              }}
+              onChange={(e) => setNik(e.target.value)}
               isRequired
-              maxLength={16}
-              inputMode="numeric"
               autoComplete="username"
               leftIcon={
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                 </svg>
               }
-              helperText={nik.length > 0 ? `${nik.length}/16 digit` : undefined}
             />
 
             {/* Password Input */}

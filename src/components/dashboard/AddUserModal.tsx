@@ -17,10 +17,12 @@ interface AddUserModalProps {
 }
 
 export default function AddUserModal({ isOpen, onClose, profile }: AddUserModalProps) {
+  const isKecMode = profile.role === "super_admin" || profile.role === "admin_kabupaten";
   const [nik, setNik] = useState("");
   const [namaLengkap, setNamaLengkap] = useState("");
   const [noHp, setNoHp] = useState("");
   const [role, setRole] = useState("");
+  const [kecamatanName, setKecamatanName] = useState("");
   
   // Selection states
   const [kecamatanId, setKecamatanId] = useState("");
@@ -50,6 +52,7 @@ export default function AddUserModal({ isOpen, onClose, profile }: AddUserModalP
     setNamaLengkap("");
     setNoHp("");
     setRole("");
+    setKecamatanName("");
     setKecamatanId("");
     setDesaId("");
     setDusunId("");
@@ -58,6 +61,14 @@ export default function AddUserModal({ isOpen, onClose, profile }: AddUserModalP
     setDasawismaId("");
     setErrorMessage("");
     setSuccessMessage("");
+  };
+
+  const handleKecamatanNameChange = (val: string) => {
+    const uppercaseVal = val.toUpperCase();
+    setKecamatanName(uppercaseVal);
+    const lowercaseUsername = uppercaseVal.toLowerCase().replace(/\s+/g, "");
+    setNik(lowercaseUsername);
+    setNamaLengkap(`Admin ${uppercaseVal}`);
   };
 
   // Determine allowed roles to create based on admin role
@@ -215,10 +226,11 @@ export default function AddUserModal({ isOpen, onClose, profile }: AddUserModalP
 
     const result = await createUserAction({
       nik,
-      nama_lengkap: namaLengkap,
-      no_hp: noHp || undefined,
-      role,
-      kecamatan_id: role === "admin_kecamatan" ? kecamatanId : undefined,
+      nama_lengkap: isKecMode ? `Admin ${kecamatanName}` : namaLengkap,
+      no_hp: isKecMode ? undefined : (noHp || undefined),
+      role: isKecMode ? "admin_kecamatan" : role,
+      kecamatan_name: isKecMode ? kecamatanName : undefined,
+      kecamatan_id: role === "admin_kecamatan" && !isKecMode ? kecamatanId : undefined,
       desa_id: role === "admin_desa" ? desaId : undefined,
       dusun_id: ["verifikator_dusun", "verifikator_rw", "verifikator_rt", "kader_dasawisma"].includes(role) ? dusunId : undefined,
       rw_id: ["verifikator_rw", "verifikator_rt", "kader_dasawisma"].includes(role) ? rwId : undefined,
@@ -287,48 +299,72 @@ export default function AddUserModal({ isOpen, onClose, profile }: AddUserModalP
             </div>
           )}
 
-          {/* NIK */}
-          <Input
-            label="NIK (Username Login)"
-            placeholder="Masukkan 16 digit NIK"
-            value={nik}
-            onChange={(e) => setNik(e.target.value.replace(/\D/g, "").slice(0, 16))}
-            maxLength={16}
-            isRequired
-          />
+          {isKecMode ? (
+            <>
+              {/* Nama Kecamatan (Huruf Kapital & ditaruh paling atas) */}
+              <Input
+                label="Nama Kecamatan"
+                placeholder="CONTOH: DEPOK"
+                value={kecamatanName}
+                onChange={(e) => handleKecamatanNameChange(e.target.value)}
+                isRequired
+              />
 
-          {/* Nama Lengkap */}
-          <Input
-            label="Nama Lengkap"
-            placeholder="Masukkan nama lengkap"
-            value={namaLengkap}
-            onChange={(e) => setNamaLengkap(e.target.value)}
-            isRequired
-          />
+              {/* Username (Otomatis huruf kecil dari nama kecamatan) */}
+              <Input
+                label="Username Login"
+                placeholder="Otomatis terisi..."
+                value={nik}
+                disabled
+                helperText={nik ? `Login menggunakan username: ${nik}` : undefined}
+              />
+            </>
+          ) : (
+            <>
+              {/* NIK */}
+              <Input
+                label="NIK (Username Login)"
+                placeholder="Masukkan 16 digit NIK"
+                value={nik}
+                onChange={(e) => setNik(e.target.value.replace(/\D/g, "").slice(0, 16))}
+                maxLength={16}
+                isRequired
+              />
 
-          {/* No Hp */}
-          <Input
-            label="Nomor Handphone"
-            placeholder="Contoh: 081234567890"
-            value={noHp}
-            onChange={(e) => setNoHp(e.target.value)}
-          />
+              {/* Nama Lengkap */}
+              <Input
+                label="Nama Lengkap"
+                placeholder="Masukkan nama lengkap"
+                value={namaLengkap}
+                onChange={(e) => setNamaLengkap(e.target.value)}
+                isRequired
+              />
 
-          {/* Role */}
-          {allowedRoles.length > 0 && (
-            <Select
-              label="Role Tugas"
-              options={allowedRoles}
-              value={role}
-              onChange={(e) => setRole(e.target.value)}
-              isRequired
-            />
+              {/* No Hp */}
+              <Input
+                label="Nomor Handphone"
+                placeholder="Contoh: 081234567890"
+                value={noHp}
+                onChange={(e) => setNoHp(e.target.value)}
+              />
+
+              {/* Role */}
+              {allowedRoles.length > 0 && (
+                <Select
+                  label="Role Tugas"
+                  options={allowedRoles}
+                  value={role}
+                  onChange={(e) => setRole(e.target.value)}
+                  isRequired
+                />
+              )}
+            </>
           )}
 
           {/* HIERARCHICAL REGIONS */}
           
           {/* 1. Kecamatan (Super Admin / Admin Kabupaten) */}
-          {role === "admin_kecamatan" && (
+          {role === "admin_kecamatan" && !isKecMode && (
             <Select
               label="Kecamatan Tugas"
               placeholder="Pilih Kecamatan..."
