@@ -163,15 +163,32 @@ export default function EditUserModal({ isOpen, onClose, user }: EditUserModalPr
             </>
           )}
 
-          {/* Password Baru (Optional) */}
-          <Input
-            type="password"
-            label="Password Baru (Opsional)"
-            placeholder="Masukkan password baru (min. 6 karakter)"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            helperText="Kosongkan jika tidak ingin mengubah password."
-          />
+          {/* Reset Password ke Default */}
+          <div className="pt-2">
+            <label className="block text-xs font-semibold text-neutral-slate mb-1">Aksi Autentikasi</label>
+            <div className="flex items-center justify-between p-3.5 bg-neutral-snow border border-neutral-light rounded-xl">
+              <div>
+                <p className="text-xs font-semibold text-neutral-charcoal">Reset Password ke Default</p>
+                <p className="text-[10px] text-neutral-slate mt-0.5">
+                  Password akan diset menjadi: <code className="font-mono bg-neutral-light px-1 py-0.5 rounded text-tosca-700 font-bold">pkk12345</code>
+                </p>
+              </div>
+              {password === "pkk12345" ? (
+                <span className="text-xs font-semibold text-tosca-600 bg-tosca-50 px-2.5 py-1 rounded-lg border border-tosca-200/50">
+                  Siap di-reset
+                </span>
+              ) : (
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setPassword("pkk12345")}
+                >
+                  Reset Password
+                </Button>
+              )}
+            </div>
+          </div>
 
           {/* Buttons Footer */}
           <div className="pt-4 flex items-center justify-end gap-3 border-t border-neutral-light">
