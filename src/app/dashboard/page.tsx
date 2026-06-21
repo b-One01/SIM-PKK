@@ -1,8 +1,8 @@
 // =============================================================================
 // OVERVIEW DASHBOARD — SIM-PKK
 // =============================================================================
-// Halaman utama dashboard. Menampilkan ringkasan data,
-// status approval, dan tombol aksi cepat.
+// Halaman utama dashboard dengan gradient stat cards,
+// timeline verifikasi premium, dan info cards.
 // =============================================================================
 
 import Link from "next/link";
@@ -147,24 +147,80 @@ export default async function DashboardOverviewPage() {
     stats.totalLansia = 8;
   }
 
+  // Stat card configurations
+  const statCards = [
+    {
+      label: "Kepala Keluarga",
+      value: stats.totalKK,
+      unit: "KK",
+      gradient: "from-tosca-500 to-tosca-600",
+      iconBg: "bg-tosca-400/20",
+      icon: (
+        <svg className="w-6 h-6 text-tosca-100" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+        </svg>
+      ),
+    },
+    {
+      label: "Anggota Keluarga",
+      value: stats.totalJiwa,
+      unit: "Jiwa",
+      gradient: "from-tosca-400 to-tosca-500",
+      iconBg: "bg-tosca-300/20",
+      icon: (
+        <svg className="w-6 h-6 text-tosca-100" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
+        </svg>
+      ),
+    },
+    {
+      label: "Balita / Stunting",
+      value: stats.totalBalita,
+      unit: null,
+      extra: { label: "Stunting", value: stats.totalStunting },
+      gradient: "from-kuning-400 to-kuning-500",
+      iconBg: "bg-kuning-300/20",
+      icon: (
+        <svg className="w-6 h-6 text-kuning-100" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+        </svg>
+      ),
+    },
+    {
+      label: "Ibu Hamil / Lansia",
+      value: stats.totalBumil,
+      unit: null,
+      extra: { label: "Lansia", value: stats.totalLansia },
+      gradient: "from-maroon-400 to-maroon-500",
+      iconBg: "bg-maroon-300/20",
+      icon: (
+        <svg className="w-6 h-6 text-maroon-100" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+        </svg>
+      ),
+    },
+  ];
+
   return (
     <div className="space-y-6">
       {/* Banner Peringatan Migrasi Database */}
       {stats.isDbUnmigrated && (
-        <div className="p-4 rounded-2xl bg-amber-50 border border-amber-200 shadow-sm animate-fade-in">
+        <div className="p-4 rounded-2xl bg-gradient-to-r from-amber-50 to-kuning-50 border border-amber-200/50 shadow-sm animate-fade-in">
           <div className="flex items-start gap-3">
-            <svg className="w-5.5 h-5.5 text-amber-600 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-            </svg>
+            <div className="flex items-center justify-center w-9 h-9 rounded-xl bg-amber-100 flex-shrink-0">
+              <svg className="w-5 h-5 text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+              </svg>
+            </div>
             <div className="flex-1">
               <h4 className="text-sm font-bold text-amber-900 font-display">
                 Database Migrasi Diperlukan
               </h4>
               <p className="text-xs text-amber-800 mt-1 leading-relaxed">
-                Tabel database belum terdeteksi di Supabase. Halaman ini saat ini menampilkan **Data Simulasi/Mockup** untuk peninjauan UI.
-                Silakan jalankan file migrasi di folder `supabase/migrations/` (00001 s/d 00006) melalui SQL Editor Supabase Anda untuk mengaktifkan database secara penuh.
+                Tabel database belum terdeteksi di Supabase. Halaman ini saat ini menampilkan <strong>Data Simulasi/Mockup</strong> untuk peninjauan UI.
+                Silakan jalankan file migrasi di folder <code className="px-1.5 py-0.5 rounded bg-amber-100 text-amber-900 text-[10px] font-mono">supabase/migrations/</code> melalui SQL Editor Supabase.
               </p>
-              <div className="mt-3 flex items-center gap-2">
+              <div className="mt-3">
                 <Badge variant="warning">Mode Simulasi UI</Badge>
               </div>
             </div>
@@ -178,8 +234,8 @@ export default async function DashboardOverviewPage() {
           <h2 className="text-2xl font-display font-bold text-neutral-charcoal">
             Overview Pendataan Bulanan
           </h2>
-          <p className="text-sm text-neutral-slate">
-            Status statistik keluarga per periode **{new Date().toLocaleDateString("id-ID", { month: "long", year: "numeric" })}**.
+          <p className="text-sm text-neutral-slate mt-1">
+            Status statistik keluarga per periode <strong>{new Date().toLocaleDateString("id-ID", { month: "long", year: "numeric" })}</strong>.
           </p>
         </div>
 
@@ -195,69 +251,53 @@ export default async function DashboardOverviewPage() {
         )}
       </div>
 
-      {/* Grid Kartu Statistik */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
-        {/* KK */}
-        <Card padding="md" className="border-l-4 border-l-tosca-500 shadow-sm">
-          <span className="text-xs font-semibold text-neutral-slate uppercase tracking-wider">
-            Total Kepala Keluarga
-          </span>
-          <div className="flex items-baseline gap-2 mt-1">
-            <span className="text-2xl md:text-3xl font-display font-bold text-neutral-charcoal">
-              {stats.totalKK}
-            </span>
-            <span className="text-xs font-medium text-neutral-gray">KK</span>
-          </div>
-        </Card>
+      {/* Grid Kartu Statistik — Gradient Premium */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5">
+        {statCards.map((card, idx) => (
+          <div
+            key={idx}
+            className={`relative overflow-hidden rounded-2xl bg-gradient-to-br ${card.gradient} p-5 text-white shadow-lg transition-all duration-300 hover:-translate-y-1 hover:shadow-xl`}
+          >
+            {/* Decorative Circle */}
+            <div className="absolute -top-4 -right-4 w-20 h-20 rounded-full bg-white/10" />
+            <div className="absolute -bottom-6 -right-6 w-24 h-24 rounded-full bg-white/5" />
 
-        {/* Jiwa */}
-        <Card padding="md" className="border-l-4 border-l-tosca-400 shadow-sm">
-          <span className="text-xs font-semibold text-neutral-slate uppercase tracking-wider">
-            Total Anggota Keluarga
-          </span>
-          <div className="flex items-baseline gap-2 mt-1">
-            <span className="text-2xl md:text-3xl font-display font-bold text-neutral-charcoal">
-              {stats.totalJiwa}
-            </span>
-            <span className="text-xs font-medium text-neutral-gray">Jiwa</span>
-          </div>
-        </Card>
+            {/* Icon */}
+            <div className={`inline-flex items-center justify-center w-10 h-10 rounded-xl ${card.iconBg} mb-3`}>
+              {card.icon}
+            </div>
 
-        {/* Balita & Stunting */}
-        <Card padding="md" className="border-l-4 border-l-kuning-500 shadow-sm">
-          <span className="text-xs font-semibold text-neutral-slate uppercase tracking-wider">
-            Balita / Stunting
-          </span>
-          <div className="flex items-baseline gap-2 mt-1">
-            <span className="text-2xl md:text-3xl font-display font-bold text-neutral-charcoal">
-              {stats.totalBalita}
+            {/* Label */}
+            <span className="text-[11px] font-semibold text-white/70 uppercase tracking-wider">
+              {card.label}
             </span>
-            <span className="text-xs font-medium text-neutral-slate">
-              / <span className="text-maroon-600 font-bold">{stats.totalStunting}</span> Stunting
-            </span>
-          </div>
-        </Card>
 
-        {/* Ibu Hamil */}
-        <Card padding="md" className="border-l-4 border-l-pink-500 shadow-sm">
-          <span className="text-xs font-semibold text-neutral-slate uppercase tracking-wider">
-            Ibu Hamil / Lansia
-          </span>
-          <div className="flex items-baseline gap-2 mt-1">
-            <span className="text-2xl md:text-3xl font-display font-bold text-neutral-charcoal">
-              {stats.totalBumil}
-            </span>
-            <span className="text-xs font-medium text-neutral-slate">
-              / {stats.totalLansia} Lansia
-            </span>
+            {/* Value */}
+            <div className="flex items-baseline gap-2 mt-1">
+              <span className="text-3xl md:text-4xl font-display font-bold">
+                {card.value}
+              </span>
+              {card.unit && (
+                <span className="text-sm font-medium text-white/60">{card.unit}</span>
+              )}
+            </div>
+
+            {/* Extra Metric */}
+            {card.extra && (
+              <div className="mt-2 pt-2 border-t border-white/20">
+                <span className="text-xs text-white/60">
+                  {card.extra.label}: <strong className="text-white">{card.extra.value}</strong>
+                </span>
+              </div>
+            )}
           </div>
-        </Card>
+        ))}
       </div>
 
       {/* Grid Konten Detail */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Alur & Status Verifikasi */}
-        <Card padding="lg" className="lg:col-span-2 shadow-dropdown">
+        <Card padding="lg" className="lg:col-span-2">
           <h3 className="font-display font-bold text-lg text-neutral-charcoal">
             Status Verifikasi & Validasi
           </h3>
@@ -265,11 +305,15 @@ export default async function DashboardOverviewPage() {
             Riwayat persetujuan data dari tingkat Dasawisma hingga Desa.
           </p>
 
-          <div className="mt-6 relative border-l-2 border-tosca-100 pl-6 space-y-6">
+          <div className="mt-6 relative border-l-2 border-gradient-to-b from-tosca-300 to-tosca-100 pl-6 space-y-6">
             {/* Step 1: Input Kader */}
-            <div className="relative">
-              <span className="absolute -left-[31px] top-0 flex items-center justify-center w-4 h-4 rounded-full bg-tosca-500 ring-4 ring-white" />
-              <div className="flex justify-between">
+            <div className="relative animate-fade-in">
+              <span className="absolute -left-[31px] top-0 flex items-center justify-center w-5 h-5 rounded-full bg-tosca-500 ring-4 ring-tosca-50 shadow-sm">
+                <svg className="w-2.5 h-2.5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                </svg>
+              </span>
+              <div className="flex justify-between items-start">
                 <h4 className="text-sm font-semibold text-neutral-charcoal">
                   1. Input Kader Dasawisma
                 </h4>
@@ -282,8 +326,8 @@ export default async function DashboardOverviewPage() {
 
             {/* Step 2: Verifikasi RT */}
             <div className="relative">
-              <span className="absolute -left-[31px] top-0 flex items-center justify-center w-4 h-4 rounded-full bg-kuning-500 ring-4 ring-white" />
-              <div className="flex justify-between">
+              <span className="absolute -left-[31px] top-0 flex items-center justify-center w-5 h-5 rounded-full bg-kuning-400 ring-4 ring-kuning-50 shadow-sm animate-pulse-soft" />
+              <div className="flex justify-between items-start">
                 <h4 className="text-sm font-semibold text-neutral-charcoal">
                   2. Persetujuan RT
                 </h4>
@@ -295,9 +339,9 @@ export default async function DashboardOverviewPage() {
             </div>
 
             {/* Step 3: Verifikasi RW */}
-            <div className="relative opacity-60">
-              <span className="absolute -left-[31px] top-0 flex items-center justify-center w-4 h-4 rounded-full bg-neutral-light ring-4 ring-white" />
-              <div className="flex justify-between">
+            <div className="relative opacity-50">
+              <span className="absolute -left-[31px] top-0 flex items-center justify-center w-5 h-5 rounded-full bg-neutral-light ring-4 ring-white shadow-sm" />
+              <div className="flex justify-between items-start">
                 <h4 className="text-sm font-semibold text-neutral-charcoal">
                   3. Persetujuan RW
                 </h4>
@@ -311,41 +355,51 @@ export default async function DashboardOverviewPage() {
         </Card>
 
         {/* Info Cepat / Akses Cepat */}
-        <div className="space-y-6">
-          <Card padding="lg" className="shadow-dropdown bg-gradient-to-br from-tosca-500 to-tosca-600 text-white border-none">
-            <h3 className="font-display font-bold text-lg">Informasi PKK</h3>
-            <p className="text-xs text-tosca-100 mt-2 leading-relaxed">
+        <div className="space-y-5">
+          <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-tosca-500 via-tosca-600 to-tosca-700 p-6 text-white shadow-xl">
+            {/* Decorative */}
+            <div className="absolute -top-8 -right-8 w-32 h-32 rounded-full bg-white/10" />
+            <div className="absolute -bottom-4 -left-4 w-24 h-24 rounded-full bg-white/5" />
+
+            <h3 className="font-display font-bold text-lg relative">Informasi PKK</h3>
+            <p className="text-xs text-tosca-100 mt-2 leading-relaxed relative">
               SIM-PKK memudahkan pelaporan dan analisis program 10 Pokok Program PKK. 
-              Gunakan menu **Data Keluarga** untuk melihat daftar, melakukan entri data baru, dan melihat status ekspor Pokja.
+              Gunakan menu <strong>Data Keluarga</strong> untuk melihat daftar, melakukan entri data baru, dan melihat status ekspor Pokja.
             </p>
-            <div className="mt-6 flex flex-wrap gap-2">
+            <div className="mt-5 relative">
               <Link href="/dashboard/keluarga">
-                <Button variant="outline" size="sm" className="bg-white/20 text-white border-white/20 hover:bg-white/30">
+                <Button variant="outline" size="sm" className="bg-white/20 text-white border-white/20 hover:bg-white/30 hover:translate-y-0">
                   Lihat Data Keluarga
                 </Button>
               </Link>
             </div>
-          </Card>
+          </div>
 
-          <Card padding="lg" className="shadow-dropdown">
+          <Card padding="lg">
             <h3 className="font-display font-bold text-sm text-neutral-charcoal">Panduan Role Anda</h3>
             <div className="mt-4 space-y-3">
-              <div className="flex gap-2">
-                <span className="text-tosca-600 font-bold">•</span>
+              <div className="flex gap-2.5">
+                <span className="flex-shrink-0 w-5 h-5 rounded-lg bg-tosca-50 flex items-center justify-center">
+                  <span className="w-1.5 h-1.5 rounded-full bg-tosca-500" />
+                </span>
                 <p className="text-xs text-neutral-slate leading-relaxed">
-                  **Kader**: Input data KK, Anggota Keluarga, dan Data Sektoral bulanan.
+                  <strong className="text-neutral-charcoal">Kader</strong>: Input data KK, Anggota Keluarga, dan Data Sektoral bulanan.
                 </p>
               </div>
-              <div className="flex gap-2">
-                <span className="text-tosca-600 font-bold">•</span>
+              <div className="flex gap-2.5">
+                <span className="flex-shrink-0 w-5 h-5 rounded-lg bg-kuning-50 flex items-center justify-center">
+                  <span className="w-1.5 h-1.5 rounded-full bg-kuning-500" />
+                </span>
                 <p className="text-xs text-neutral-slate leading-relaxed">
-                  **Verifikator RT/RW**: Verifikasi summary wilayah (tanpa data individu) sebelum diteruskan ke admin desa.
+                  <strong className="text-neutral-charcoal">Verifikator RT/RW</strong>: Verifikasi summary wilayah (tanpa data individu) sebelum diteruskan ke admin desa.
                 </p>
               </div>
-              <div className="flex gap-2">
-                <span className="text-tosca-600 font-bold">•</span>
+              <div className="flex gap-2.5">
+                <span className="flex-shrink-0 w-5 h-5 rounded-lg bg-maroon-50 flex items-center justify-center">
+                  <span className="w-1.5 h-1.5 rounded-full bg-maroon-500" />
+                </span>
                 <p className="text-xs text-neutral-slate leading-relaxed">
-                  **Admin Desa**: Monitor seluruh wilayah, ekspor laporan PDF/Excel per Pokja.
+                  <strong className="text-neutral-charcoal">Admin Desa</strong>: Monitor seluruh wilayah, ekspor laporan PDF/Excel per Pokja.
                 </p>
               </div>
             </div>

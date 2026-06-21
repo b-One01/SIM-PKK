@@ -163,9 +163,9 @@ export default async function LaporanPage({
     <div className="space-y-6">
       {/* Banner Peringatan DB */}
       {isDbUnmigrated && (
-        <div className="p-4 rounded-2xl bg-amber-50 border border-amber-200">
+        <div className="p-4 rounded-2xl bg-gradient-to-r from-amber-50 to-kuning-50 border border-amber-200/50">
           <p className="text-xs text-amber-800 leading-relaxed font-semibold">
-            ⚠️ Menampilkan **Data Simulasi** karena view Pokja belum terdeteksi di database.
+            ⚠️ Menampilkan <strong>Data Simulasi</strong> karena view Pokja belum terdeteksi di database.
           </p>
         </div>
       )}

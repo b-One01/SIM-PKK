@@ -8,6 +8,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { Button, Input, Card, CardTitle, CardDescription } from "@/components/ui";
 
 export default function LoginPage() {
@@ -63,38 +64,50 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-tosca-50 via-white to-kuning-50 px-4">
+    <div className="min-h-screen flex items-center justify-center relative overflow-hidden bg-gradient-to-br from-tosca-50 via-white to-kuning-50 px-4">
+      {/* Decorative Background Shapes */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        {/* Large Blob Top-Right */}
+        <div className="absolute -top-32 -right-32 w-96 h-96 rounded-full bg-gradient-to-br from-tosca-200/40 to-tosca-300/20 blur-3xl animate-float" />
+        {/* Medium Blob Bottom-Left */}
+        <div className="absolute -bottom-24 -left-24 w-80 h-80 rounded-full bg-gradient-to-tr from-kuning-200/30 to-kuning-300/10 blur-3xl animate-float" style={{ animationDelay: '2s' }} />
+        {/* Small Blob Center-Left */}
+        <div className="absolute top-1/3 -left-16 w-48 h-48 rounded-full bg-gradient-to-r from-maroon-200/20 to-maroon-100/10 blur-2xl animate-float" style={{ animationDelay: '4s' }} />
+        {/* Subtle Grid Pattern */}
+        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiMwMDAiIGZpbGwtb3BhY2l0eT0iMC4wMiI+PHBhdGggZD0iTTM2IDM0djJIMjR2LTJoMTJ6TTI0IDI0aDEydjJIMjR2LTJ6Ii8+PC9nPjwvZz48L3N2Zz4=')] opacity-40" />
+      </div>
+
       {/* Container Login */}
-      <div className="w-full max-w-md animate-fade-in">
+      <div className="w-full max-w-md relative z-10 animate-fade-in">
         {/* Header / Branding */}
         <div className="text-center mb-8">
           {/* Logo PKK */}
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-tosca-500 to-tosca-600 shadow-lg mb-4">
-            <svg
-              className="w-8 h-8 text-white"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              aria-hidden="true"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
+          <div className="inline-flex items-center justify-center mb-5 animate-bounce-in">
+            <div className="relative">
+              <div className="absolute inset-0 rounded-full bg-tosca-400/20 blur-xl scale-150" />
+              <Image
+                src="/images/logo-pkk.png"
+                alt="Logo PKK"
+                width={80}
+                height={80}
+                className="relative drop-shadow-lg"
+                priority
               />
-            </svg>
+            </div>
           </div>
-          <h1 className="text-2xl font-display font-bold text-neutral-charcoal">
+          <h1 className="text-3xl font-display font-bold text-gradient-primary">
             SIM-PKK
           </h1>
-          <p className="text-sm text-neutral-slate mt-1">
+          <p className="text-sm text-neutral-slate mt-1.5 font-medium">
             Sistem Informasi Manajemen PKK
+          </p>
+          <p className="text-[11px] text-neutral-gray mt-0.5">
+            Pemberdayaan Kesejahteraan Keluarga
           </p>
         </div>
 
-        {/* Card Login */}
-        <Card padding="lg" className="shadow-dropdown">
+        {/* Card Login — Glassmorphism */}
+        <Card variant="glass" padding="lg" className="shadow-modal backdrop-blur-2xl border-white/40">
           <CardTitle>Masuk ke Akun Anda</CardTitle>
           <CardDescription>
             Gunakan NIK dan password yang diberikan oleh admin.
@@ -141,11 +154,11 @@ export default function LoginPage() {
 
             {/* Error Message */}
             {error && (
-              <div className="flex items-center gap-2 p-3 rounded-button bg-maroon-50 border border-maroon-200 animate-slide-down">
+              <div className="flex items-center gap-2 p-3 rounded-xl bg-maroon-50 border border-maroon-200 animate-slide-down">
                 <svg className="w-4 h-4 text-maroon-600 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
                 </svg>
-                <span className="text-sm text-maroon-700">{error}</span>
+                <span className="text-sm text-maroon-700 font-medium">{error}</span>
               </div>
             )}
 

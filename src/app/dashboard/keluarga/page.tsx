@@ -158,9 +158,9 @@ export default async function KeluargaPage({
     <div className="space-y-6">
       {/* Banner Peringatan DB */}
       {isDbUnmigrated && (
-        <div className="p-4 rounded-2xl bg-amber-50 border border-amber-200">
+        <div className="p-4 rounded-2xl bg-gradient-to-r from-amber-50 to-kuning-50 border border-amber-200/50">
           <p className="text-xs text-amber-800 leading-relaxed font-semibold">
-            ⚠️ Menampilkan **Data Simulasi** karena tabel `keluarga` tidak ditemukan di database.
+            ⚠️ Menampilkan <strong>Data Simulasi</strong> karena tabel keluarga tidak ditemukan di database.
           </p>
         </div>
       )}
@@ -250,13 +250,18 @@ export default async function KeluargaPage({
                 keluargaList.map((row) => (
                   <tr
                     key={row.id}
-                    className="hover:bg-tosca-50/20 transition-colors duration-150"
+                    className="hover:bg-tosca-50/30 transition-all duration-200 group"
                   >
-                    <td className="px-6 py-4.5 font-semibold text-neutral-charcoal">
+                    <td className="px-6 py-4.5 font-semibold text-neutral-charcoal font-mono text-xs">
                       {row.no_kk}
                     </td>
-                    <td className="px-6 py-4.5 font-medium text-neutral-charcoal">
-                      {row.nama_kepala_keluarga}
+                    <td className="px-6 py-4.5">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-tosca-400 to-tosca-500 flex items-center justify-center text-white text-xs font-bold shadow-sm">
+                          {row.nama_kepala_keluarga.charAt(0)}
+                        </div>
+                        <span className="font-medium text-neutral-charcoal">{row.nama_kepala_keluarga}</span>
+                      </div>
                     </td>
                     <td className="px-6 py-4.5 text-neutral-slate">
                       <div className="text-xs font-semibold text-neutral-charcoal">

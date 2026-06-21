@@ -129,9 +129,9 @@ export default async function VerifikasiPage() {
     <div className="space-y-6">
       {/* Banner Peringatan DB */}
       {isDbUnmigrated && (
-        <div className="p-4 rounded-2xl bg-amber-50 border border-amber-200">
+        <div className="p-4 rounded-2xl bg-gradient-to-r from-amber-50 to-kuning-50 border border-amber-200/50">
           <p className="text-xs text-amber-800 leading-relaxed font-semibold">
-            ⚠️ Menampilkan **Data Simulasi** karena view verifikasi tidak ditemukan di database.
+            ⚠️ Menampilkan <strong>Data Simulasi</strong> karena view verifikasi tidak ditemukan di database.
           </p>
         </div>
       )}
@@ -158,10 +158,10 @@ export default async function VerifikasiPage() {
           </Card>
         ) : (
           pendingVerifikasi.map((item) => (
-            <Card key={item.id} padding="lg" className="shadow-dropdown border border-neutral-light relative overflow-hidden">
+            <Card key={item.id} padding="lg" className="relative overflow-hidden">
               {/* Top border indicator based on SLA */}
-              <div className={`absolute top-0 left-0 w-full h-1.5 ${
-                item.sla_days_left <= 2 ? "bg-maroon-500" : "bg-kuning-500"
+              <div className={`absolute top-0 left-0 w-full h-1 rounded-t-2xl ${
+                item.sla_days_left <= 2 ? "bg-gradient-to-r from-maroon-400 to-maroon-600" : "bg-gradient-to-r from-kuning-400 to-kuning-500"
               }`} />
 
               <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 pt-2">
@@ -197,7 +197,12 @@ export default async function VerifikasiPage() {
                   </div>
                   <div className="text-left">
                     <span className="text-[10px] text-neutral-slate font-semibold uppercase tracking-wider">Stunting</span>
-                    <p className="text-xl font-bold text-maroon-600 mt-0.5">{item.total_stunting}</p>
+                    <p className="text-xl font-bold text-maroon-600 mt-0.5">
+                      {item.total_stunting}
+                      {item.total_stunting > 0 && (
+                        <span className="text-[10px] text-maroon-400 font-medium ml-1">⚠️</span>
+                      )}
+                    </p>
                   </div>
                 </div>
 

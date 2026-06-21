@@ -110,6 +110,10 @@ const config: Config = {
         "slide-down": "slideDown 0.2s ease-out",
         "scale-in": "scaleIn 0.2s ease-out",
         "pulse-soft": "pulseSoft 2s ease-in-out infinite",
+        "bounce-in": "bounceIn 0.6s ease-out",
+        "float": "float 6s ease-in-out infinite",
+        "shimmer": "shimmer 2s ease-in-out infinite",
+        "gradient-shift": "gradientShift 3s ease infinite",
       },
 
       keyframes: {
@@ -132,6 +136,25 @@ const config: Config = {
         pulseSoft: {
           "0%, 100%": { opacity: "1" },
           "50%": { opacity: "0.7" },
+        },
+        bounceIn: {
+          "0%": { transform: "scale(0.3)", opacity: "0" },
+          "50%": { transform: "scale(1.05)" },
+          "70%": { transform: "scale(0.9)" },
+          "100%": { transform: "scale(1)", opacity: "1" },
+        },
+        float: {
+          "0%, 100%": { transform: "translateY(0) rotate(0deg)" },
+          "33%": { transform: "translateY(-12px) rotate(2deg)" },
+          "66%": { transform: "translateY(8px) rotate(-1deg)" },
+        },
+        shimmer: {
+          "0%": { backgroundPosition: "-200% 0" },
+          "100%": { backgroundPosition: "200% 0" },
+        },
+        gradientShift: {
+          "0%, 100%": { backgroundPosition: "0% 50%" },
+          "50%": { backgroundPosition: "100% 50%" },
         },
       },
     },
