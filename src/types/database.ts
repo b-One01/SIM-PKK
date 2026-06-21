@@ -15,6 +15,7 @@ export type UserRole =
   | "admin_kabupaten"
   | "admin_kecamatan"
   | "admin_desa"
+  | "verifikator_dusun"
   | "verifikator_rw"
   | "verifikator_rt"
   | "kader_dasawisma";

@@ -51,6 +51,7 @@ export default async function UsersPage() {
         no_hp,
         is_active,
         wilayah_desa (nama),
+        wilayah_dusun (nama),
         kelompok_dasawisma (nama),
         wilayah_rt (nomor),
         wilayah_rw (nomor)
@@ -74,6 +75,8 @@ export default async function UsersPage() {
           wilayahStr = `RT ${row.wilayah_rt?.nomor || "-"}`;
         } else if (row.role === "verifikator_rw") {
           wilayahStr = `RW ${row.wilayah_rw?.nomor || "-"}`;
+        } else if (row.role === "verifikator_dusun") {
+          wilayahStr = `Dusun ${row.wilayah_dusun?.nama || "-"}`;
         } else {
           wilayahStr = `Desa ${row.wilayah_desa?.nama || "-"}`;
         }
@@ -130,7 +133,9 @@ export default async function UsersPage() {
     switch (r) {
       case "super_admin": return "Super Admin";
       case "admin_kabupaten": return "Admin Kabupaten";
+      case "admin_kecamatan": return "Admin Kecamatan";
       case "admin_desa": return "Admin Desa";
+      case "verifikator_dusun": return "Verifikator Dusun";
       case "verifikator_rw": return "Verifikator RW";
       case "verifikator_rt": return "Verifikator RT";
       case "kader_dasawisma": return "Kader Dasawisma";

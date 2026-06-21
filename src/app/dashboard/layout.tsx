@@ -35,6 +35,7 @@ export default async function DashboardLayout({
       wilayah_kabupaten (nama),
       wilayah_kecamatan (nama),
       wilayah_desa (nama),
+      wilayah_dusun (nama),
       wilayah_rw (nomor),
       wilayah_rt (nomor),
       kelompok_dasawisma (nama)
@@ -48,6 +49,7 @@ export default async function DashboardLayout({
     wilayah_kabupaten?: { nama: string };
     wilayah_kecamatan?: { nama: string };
     wilayah_desa?: { nama: string };
+    wilayah_dusun?: { nama: string };
     wilayah_rw?: { nomor: string };
     wilayah_rt?: { nomor: string };
     kelompok_dasawisma?: { nama: string };

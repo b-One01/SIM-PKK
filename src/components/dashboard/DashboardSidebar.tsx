@@ -18,6 +18,7 @@ interface DashboardSidebarProps {
     wilayah_kabupaten?: { nama: string };
     wilayah_kecamatan?: { nama: string };
     wilayah_desa?: { nama: string };
+    wilayah_dusun?: { nama: string };
     wilayah_rw?: { nomor: string };
     wilayah_rt?: { nomor: string };
     kelompok_dasawisma?: { nama: string };
@@ -39,6 +40,8 @@ export default function DashboardSidebar({ profile }: DashboardSidebarProps) {
         return `Kec. ${profile.wilayah_kecamatan?.nama || "-"}`;
       case "admin_desa":
         return `Desa ${profile.wilayah_desa?.nama || "-"}`;
+      case "verifikator_dusun":
+        return `Dusun ${profile.wilayah_dusun?.nama || "-"} / Desa ${profile.wilayah_desa?.nama || "-"}`;
       case "verifikator_rw":
         return `RW ${profile.wilayah_rw?.nomor || "-"} / Desa ${profile.wilayah_desa?.nama || "-"}`;
       case "verifikator_rt":
@@ -61,6 +64,8 @@ export default function DashboardSidebar({ profile }: DashboardSidebarProps) {
         return "Admin Kecamatan";
       case "admin_desa":
         return "Admin Desa";
+      case "verifikator_dusun":
+        return "Verifikator Dusun";
       case "verifikator_rw":
         return "Verifikator RW";
       case "verifikator_rt":

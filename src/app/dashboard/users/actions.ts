@@ -11,6 +11,7 @@ export async function createUserAction(formData: {
   kabupaten_id?: string;
   kecamatan_id?: string;
   desa_id?: string;
+  dusun_id?: string;
   rw_id?: string;
   rt_id?: string;
   dasawisma_id?: string;
@@ -48,6 +49,7 @@ export async function createUserAction(formData: {
     let targetKabupatenId = currentProfile.kabupaten_id;
     let targetKecamatanId = currentProfile.kecamatan_id;
     let targetDesaId = currentProfile.desa_id;
+    let targetDusunId = formData.dusun_id || null;
     let targetRwId = formData.rw_id || null;
     let targetRtId = formData.rt_id || null;
     let targetDasawismaId = formData.dasawisma_id || null;
@@ -73,22 +75,27 @@ export async function createUserAction(formData: {
       }
       targetDesaId = formData.desa_id;
     } else if (callerRole === "admin_desa") {
-      // Admin Desa membuat RT, RW, Dasawisma
-      if (role !== "verifikator_rw" && role !== "verifikator_rt" && role !== "kader_dasawisma") {
-        return { success: false, error: "Admin Desa hanya dapat membuat Verifikator RW, Verifikator RT, atau Kader Dasawisma." };
+      // Admin Desa membuat Dusun, RW, RT, Dasawisma (semuanya level PWA)
+      const allowedRoles = ["verifikator_dusun", "verifikator_rw", "verifikator_rt", "kader_dasawisma"];
+      if (!allowedRoles.includes(role)) {
+        return { success: false, error: "Admin Desa hanya dapat membuat Verifikator Dusun, RW, RT, atau Kader Dasawisma." };
       }
 
-      if (role === "verifikator_rw") {
-        if (!formData.rw_id) {
-          return { success: false, error: "RW wajib dipilih." };
+      if (role === "verifikator_dusun") {
+        if (!formData.dusun_id) {
+          return { success: false, error: "Dusun wajib dipilih." };
+        }
+      } else if (role === "verifikator_rw") {
+        if (!formData.dusun_id || !formData.rw_id) {
+          return { success: false, error: "Dusun dan RW wajib dipilih." };
         }
       } else if (role === "verifikator_rt") {
-        if (!formData.rw_id || !formData.rt_id) {
-          return { success: false, error: "RW dan RT wajib dipilih." };
+        if (!formData.dusun_id || !formData.rw_id || !formData.rt_id) {
+          return { success: false, error: "Dusun, RW, dan RT wajib dipilih." };
         }
       } else if (role === "kader_dasawisma") {
-        if (!formData.rw_id || !formData.rt_id || !formData.dasawisma_id) {
-          return { success: false, error: "RW, RT, dan Dasawisma wajib dipilih." };
+        if (!formData.dusun_id || !formData.rw_id || !formData.rt_id || !formData.dasawisma_id) {
+          return { success: false, error: "Dusun, RW, RT, dan Dasawisma wajib dipilih." };
         }
       }
     } else {
@@ -100,7 +107,7 @@ export async function createUserAction(formData: {
 
     const adminClient = createAdminClient();
 
-    // 4. Create auth user
+    // 4. Create auth user (trigger will automatically insert to user_profiles with all metadata)
     const { data: authData, error: authError } = await adminClient.auth.admin.createUser({
       email: email,
       password: defaultPassword,
@@ -112,6 +119,10 @@ export async function createUserAction(formData: {
         kabupaten_id: targetKabupatenId,
         kecamatan_id: targetKecamatanId,
         desa_id: targetDesaId,
+        dusun_id: targetDusunId,
+        rw_id: targetRwId,
+        rt_id: targetRtId,
+        dasawisma_id: targetDasawismaId,
       }
     });
 
@@ -122,10 +133,10 @@ export async function createUserAction(formData: {
 
     const newUserId = authData.user?.id;
 
-    // 5. Update user profiles (since the trigger runs after insert on auth.users,
-    // the profile record is already created but without rw_id, rt_id, dasawisma_id, no_hp)
+    // 5. Update non-metadata fields or ensure all fields are set correctly
     const updatePayload: any = {};
     if (formData.no_hp) updatePayload.no_hp = formData.no_hp;
+    if (targetDusunId) updatePayload.dusun_id = targetDusunId;
     if (targetRwId) updatePayload.rw_id = targetRwId;
     if (targetRtId) updatePayload.rt_id = targetRtId;
     if (targetDasawismaId) updatePayload.dasawisma_id = targetDasawismaId;

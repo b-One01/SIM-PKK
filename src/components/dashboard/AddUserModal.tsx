@@ -70,6 +70,7 @@ export default function AddUserModal({ isOpen, onClose, profile }: AddUserModalP
     }
     if (profile.role === "admin_desa") {
       return [
+        { value: "verifikator_dusun", label: "Verifikator Dusun" },
         { value: "verifikator_rw", label: "Verifikator RW" },
         { value: "verifikator_rt", label: "Verifikator RT" },
         { value: "kader_dasawisma", label: "Kader Dasawisma" },
@@ -219,6 +220,7 @@ export default function AddUserModal({ isOpen, onClose, profile }: AddUserModalP
       role,
       kecamatan_id: role === "admin_kecamatan" ? kecamatanId : undefined,
       desa_id: role === "admin_desa" ? desaId : undefined,
+      dusun_id: ["verifikator_dusun", "verifikator_rw", "verifikator_rt", "kader_dasawisma"].includes(role) ? dusunId : undefined,
       rw_id: ["verifikator_rw", "verifikator_rt", "kader_dasawisma"].includes(role) ? rwId : undefined,
       rt_id: ["verifikator_rt", "kader_dasawisma"].includes(role) ? rtId : undefined,
       dasawisma_id: role === "kader_dasawisma" ? dasawismaId : undefined,
@@ -350,7 +352,7 @@ export default function AddUserModal({ isOpen, onClose, profile }: AddUserModalP
           )}
 
           {/* 3. Dusun (Admin Desa -> Kader/Verifikator) */}
-          {["verifikator_rw", "verifikator_rt", "kader_dasawisma"].includes(role) && (
+          {["verifikator_dusun", "verifikator_rw", "verifikator_rt", "kader_dasawisma"].includes(role) && (
             <Select
               label="Dusun"
               placeholder="Pilih Dusun..."
