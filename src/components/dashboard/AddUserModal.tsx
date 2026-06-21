@@ -310,14 +310,22 @@ export default function AddUserModal({ isOpen, onClose, profile }: AddUserModalP
                 isRequired
               />
 
-              {/* Username (Otomatis huruf kecil dari nama kecamatan) */}
-              <Input
-                label="Username Login"
-                placeholder="Otomatis terisi..."
-                value={nik}
-                disabled
-                helperText={nik ? `Login menggunakan username: ${nik}` : undefined}
-              />
+              {/* Username & Password (Berdampingan di bagian bawah) */}
+              <div className="grid grid-cols-2 gap-4">
+                <Input
+                  label="Username Login"
+                  placeholder="Otomatis terisi..."
+                  value={nik}
+                  disabled
+                  helperText={nik ? `Login: ${nik}` : undefined}
+                />
+                <Input
+                  label="Password Default"
+                  value="pkk12345"
+                  disabled
+                  helperText="Password bawaan sistem"
+                />
+              </div>
             </>
           ) : (
             <>

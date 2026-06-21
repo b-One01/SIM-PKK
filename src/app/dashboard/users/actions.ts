@@ -132,8 +132,8 @@ export async function createUserAction(formData: {
     }
 
     // Validate generated username length
-    if (!finalNik || finalNik.length < 3 || finalNik.length > 16) {
-      return { success: false, error: "Username/NIK minimal 3 karakter dan maksimal 16 karakter." };
+    if (!finalNik || finalNik.length < 3 || finalNik.length > 50) {
+      return { success: false, error: "Username/NIK minimal 3 karakter dan maksimal 50 karakter." };
     }
 
     const email = `${finalNik}@sim-pkk.local`;
