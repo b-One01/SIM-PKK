@@ -40,7 +40,7 @@ export default async function UsersPage() {
   let isDbUnmigrated = false;
 
   try {
-    // Membaca daftar pengguna di desa yang sama
+    // Membaca daftar pengguna di desa/wilayah yang sama sesuai hak akses
     let query = supabase
       .from("user_profiles")
       .select(`
@@ -50,6 +50,8 @@ export default async function UsersPage() {
         nik,
         no_hp,
         is_active,
+        wilayah_kabupaten (nama),
+        wilayah_kecamatan (nama),
         wilayah_desa (nama),
         wilayah_dusun (nama),
         kelompok_dasawisma (nama),
@@ -59,6 +61,8 @@ export default async function UsersPage() {
 
     if (role === "admin_desa") {
       query = query.eq("desa_id", profile?.desa_id || "");
+    } else if (role === "admin_kecamatan") {
+      query = query.eq("kecamatan_id", profile?.kecamatan_id || "");
     } else if (role === "admin_kabupaten") {
       query = query.eq("kabupaten_id", profile?.kabupaten_id || "");
     }
@@ -68,17 +72,21 @@ export default async function UsersPage() {
 
     if (rows && rows.length > 0) {
       userList = rows.map((row: any) => {
-        let wilayahStr = "Desa";
-        if (row.role === "kader_dasawisma") {
-          wilayahStr = row.kelompok_dasawisma?.nama || "Dasawisma";
-        } else if (row.role === "verifikator_rt") {
-          wilayahStr = `RT ${row.wilayah_rt?.nomor || "-"}`;
-        } else if (row.role === "verifikator_rw") {
-          wilayahStr = `RW ${row.wilayah_rw?.nomor || "-"}`;
+        let wilayahStr = "-";
+        if (row.role === "super_admin" || row.role === "admin_kabupaten") {
+          wilayahStr = row.wilayah_kabupaten?.nama ? `Kab. ${row.wilayah_kabupaten.nama}` : "Kabupaten -";
+        } else if (row.role === "admin_kecamatan") {
+          wilayahStr = row.wilayah_kecamatan?.nama ? `Kec. ${row.wilayah_kecamatan.nama}` : "Kecamatan -";
+        } else if (row.role === "admin_desa") {
+          wilayahStr = row.wilayah_desa?.nama ? `Desa ${row.wilayah_desa.nama}` : "Desa -";
         } else if (row.role === "verifikator_dusun") {
-          wilayahStr = `Dusun ${row.wilayah_dusun?.nama || "-"}`;
-        } else {
-          wilayahStr = `Desa ${row.wilayah_desa?.nama || "-"}`;
+          wilayahStr = row.wilayah_dusun?.nama ? `Dusun ${row.wilayah_dusun.nama}` : "Dusun -";
+        } else if (row.role === "verifikator_rw") {
+          wilayahStr = row.wilayah_rw?.nomor ? `RW ${row.wilayah_rw.nomor}` : "RW -";
+        } else if (row.role === "verifikator_rt") {
+          wilayahStr = row.wilayah_rt?.nomor ? `RT ${row.wilayah_rt.nomor}` : "RT -";
+        } else if (row.role === "kader_dasawisma") {
+          wilayahStr = row.kelompok_dasawisma?.nama ? `Dasawisma ${row.kelompok_dasawisma.nama}` : "Dasawisma -";
         }
 
         return {
